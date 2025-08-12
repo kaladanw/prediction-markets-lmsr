@@ -1,0 +1,29 @@
+{
+  "name": "prediction-markets-lmsr",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.13.0",
+    "date-fns": "^4.1.0",
+    "next": "15.4.6",
+    "prisma": "^6.13.0",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "zod": "^4.0.17"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^20.19.10",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.4.6",
+    "typescript": "^5"
+  }
+}
