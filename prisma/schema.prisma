@@ -1,0 +1,44 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  balance   Int      @default(100000)
+  createdAt DateTime @default(now())
+  trades    Trade[]
+  markets   Market[] @relation("CreatorMarkets")
+}
+
+model Market {
+  id         String   @id @default(cuid())
+  question   String
+  closeTime  DateTime
+  resolved   Boolean  @default(false)
+  resolution String?
+  b          Int
+  qYes       Int      @default(0)
+  qNo        Int      @default(0)
+  creator    User     @relation("CreatorMarkets", fields: [creatorId], references: [id])
+  creatorId  String
+  createdAt  DateTime @default(now())
+  trades     Trade[]
+}
+
+model Trade {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  market    Market   @relation(fields: [marketId], references: [id])
+  marketId  String
+  outcome   String   // "YES" | "NO"
+  shares    Int
+  cost      Int
+  createdAt DateTime @default(now())
+}
