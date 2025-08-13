@@ -1,44 +1,68 @@
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
 generator client {
   provider = "prisma-client-js"
 }
 
+datasource db {
+  provider = "postgresql"
+  url      = env("DIRECT_URL")
+}
+
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  balance   Int      @default(100000)
-  createdAt DateTime @default(now())
+  id        String      @id @default(cuid())
+  email     String      @unique
+  balance   Int         @default(100000)
+  createdAt DateTime    @default(now())
+  markets   Market[]    @relation("CreatorMarkets")
   trades    Trade[]
-  markets   Market[] @relation("CreatorMarkets")
+  watchlist Watchlist[]
 }
 
 model Market {
-  id         String   @id @default(cuid())
+  id         String      @id @default(cuid())
   question   String
   closeTime  DateTime
-  resolved   Boolean  @default(false)
+  resolved   Boolean     @default(false)
   resolution String?
   b          Int
-  qYes       Int      @default(0)
-  qNo        Int      @default(0)
-  creator    User     @relation("CreatorMarkets", fields: [creatorId], references: [id])
+  qYes       Int         @default(0)
+  qNo        Int         @default(0)
   creatorId  String
-  createdAt  DateTime @default(now())
+  createdAt  DateTime    @default(now())
+  creator    User        @relation("CreatorMarkets", fields: [creatorId], references: [id])
   trades     Trade[]
+  watchlist  Watchlist[]
+
+  @@index([creatorId, createdAt])
 }
 
 model Trade {
   id        String   @id @default(cuid())
-  user      User     @relation(fields: [userId], references: [id])
   userId    String
-  market    Market   @relation(fields: [marketId], references: [id])
   marketId  String
-  outcome   String   // "YES" | "NO"
+  outcome   Outcome
   shares    Int
   cost      Int
   createdAt DateTime @default(now())
+  market    Market   @relation(fields: [marketId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([marketId, createdAt])
+}
+
+model Watchlist {
+  id       String   @id @default(cuid())
+  userId   String
+  marketId String
+  addedAt  DateTime @default(now())
+  user     User     @relation(fields: [userId], references: [id])
+  market   Market   @relation(fields: [marketId], references: [id])
+
+  @@unique([userId, marketId])
+  @@index([userId])
+}
+
+enum Outcome {
+  YES
+  NO
 }

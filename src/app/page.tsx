@@ -1,15 +1,37 @@
 import Link from "next/link";
+import AuthButton from "@/components/AuthButton";
 
 async function getMarkets() {
-const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/markets`, { cache: "no-store" });
-return res.json();
+  try {
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const res = await fetch(`${baseUrl}/api/markets`, { cache: "no-store" });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch {
+    return [];
+  }
 }
 
 export default async function Home() {
 const markets = await getMarkets();
 return (
 
-<main style={{ padding: 24 }}> <h1>Prediction Markets (Play Money)</h1> <CreateMarketForm /> <ul> {markets.map((m: any) => ( <li key={m.id} style={{ margin: "12px 0" }}> <Link href={`/market/${m.id}`}>{m.question}</Link> <div>Closes: {new Date(m.closeTime).toLocaleString()}</div> <div>Resolved: {String(m.resolved)} {m.resolution ?? ""}</div> </li> ))} </ul> </main> );
+<main style={{ padding: 24 }}> 
+  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+    <h1>Prediction Markets (Play Money)</h1> 
+    <AuthButton />
+  </div>
+  <CreateMarketForm /> 
+  <ul> 
+    {markets.map((m: any) => ( 
+      <li key={m.id} style={{ margin: "12px 0" }}> 
+        <Link href={`/market/${m.id}`}>{m.question}</Link> 
+        <div>Closes: {new Date(m.closeTime).toLocaleString()}</div> 
+        <div>Resolved: {String(m.resolved)} {m.resolution ?? ""}</div> 
+      </li> 
+    ))} 
+  </ul> 
+</main> );
 }
 
 function CreateMarketForm() {
